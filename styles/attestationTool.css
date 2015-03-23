@@ -1,0 +1,244 @@
+body {
+ font-family: "Trebuchet MS", Helvetica, Arial, sans-serif;
+ font-size: 12pt;
+ color: #2A2A2A;
+}
+
+.withBackground {
+ background: #FFFFFF url('../images/IMPACT_logo_background.gif') no-repeat bottom right fixed;
+}
+
+#contentBody {
+ background: #FFFFFF;
+}
+
+#typeMenu {
+ position: absolute;
+ border: 1px solid #ACACAC;
+}
+
+.typeMenuItem {
+ background: #FFF;
+ padding: 4px 4px 4px 4px;
+ color: #2A2A2A;
+}
+
+.typeMenuItem_ {
+ background: #FDD017;
+ padding: 4px 4px 4px 4px;
+ color: #2A2A2A;
+}
+
+.colorSample {
+ border: 1px solid #ACACAC;
+}
+
+a, td, div {
+ font-family: "Trebuchet MS", Helvetica, Arial, sans-serif;
+ font-size: 12pt;
+ color: #2A2A2A;
+}
+
+a {
+ text-decoration: none;
+}
+
+table.main {
+ width: 100%;
+ background-color:white;
+}
+
+td {
+ vertical-align:top;
+}
+
+td.titleColumn {
+ vertical-align: top;
+ text-align: center;
+}
+
+a.title {
+ font-size:large;
+}
+
+td.ingelogd {
+ color: #AAAAAA;
+ text-align: right;
+}
+
+.lemmaUnmarked {
+ background: #FFFFFF url('../images/lemmaUnmarked.png') no-repeat center;
+}
+
+.lemmaMarked {
+ background: #FFFFFF url('../images/lemmaMarked.png') no-repeat center;
+}
+
+.citaat {
+ margin: 0px 4px 4px 4px;
+ border: 1px solid #EFEFEF;
+}
+
+.citaat_selected {
+ margin: 0px 4px 4px 4px;
+ border: 1px solid #ACACAC;
+}
+
+.innerCitaatBox {
+ margin: 0px 0px 2px 2px;
+ line-height: 1.8;
+}
+
+.lemma {
+ background-color:#ff9933;
+}
+
+SC {
+ background-color: #B8B8B8;
+ color: #000000;
+ alpha(opacity=50);
+ opacity: 0.5;
+ font-weight: bold;
+}
+
+lc {
+ background-color: #B8B8B8;
+ color: #000000;
+ alpha(opacity=50);
+ opacity: 0.5;
+}
+
+rc {
+ background-color: #B8B8B8;
+ color: #000000;
+ alpha(opacity=50);
+ opacity: 0.5;
+}
+
+badbracket {
+ font-size: 20pt;
+ font-weight: bold;
+ color: #000;
+}
+
+tag {
+ font-size: 8pt;
+ color: #080808;
+}
+
+.textButton {
+ font-style: normal;
+ width: 10px;
+ height: 10px;
+ border: 1px solid #ACACAC;
+ margin: 2px 0px 0px 2px;
+ padding: 0px 2px 0px 2px;
+ background: #DDDDDD;
+}
+
+.textButtonRed {
+ color: #e0cac4;
+ font-weight: bold;
+ width: 10px;
+ height: 10px;
+ border: 1px solid #ACACAC;
+ margin: 2px 0px 0px 2px;
+ padding: 0px 2px 0px 2px;
+ background: #be4118;
+}
+
+.textButtonEmpty {
+ color: #CFCFCF;
+ width: 10px;
+ height: 10px;
+ border: 1px solid #CFCFCF;
+ margin: 2px 0px 0px 2px;
+ padding: 0px 2px 0px 2px;
+ background: #f4f4f4;
+}
+
+.lowlighted {
+ padding: 0px 1px 0px 1px;
+ margin: 0px 2px 0px 2px;
+}
+
+.highlighted {
+ padding: 0px 2px 0px 2px;
+ margin: 0px 1px 0px 1px;
+}
+
+.highlighted_group {
+ padding: 0px 1px 0px 1px;
+ margin: 0px 1px 0px 1px;
+ border: 1px solid #0A8020;
+}
+
+.highlighted_selected {
+ position: relative;
+ padding: 0px 1px 0px 1px;
+ margin: 0px;
+ border: 2px solid #10D034;
+ z-index: 100;
+}
+
+.saveAttestation {
+ background: #FFCC77;
+ padding: 3px;
+}
+
+.message {
+ background: #FFFFCC;
+ border: 1px solid #FFCC00;
+ padding: 4px;
+ margin: 0px 4px 4px 4px;
+}
+
+.noMessage {
+ border: 1px solid #FFFFFF;
+ padding: 4px;
+ margin: 0px 4px 4px 4px;
+}
+
+.error {
+ background: #FFCCCC;
+ border: 1px solid #FF0000;
+ padding: 4px;
+ margin: 0px 4px 4px 4px;
+}
+
+#attestedSoFar {
+ font-style: italic;
+ background: #FAFAFA;
+ border: 1px solid #EDEDED;
+ padding: 0px 4px 0px 0px;
+}
+
+#attestedSoFar_refresh {
+ padding: 0px 6px 0px 6px;
+}
+
+.instructions {
+ padding: 10px;
+}
+
+.keyCell {
+ border-bottom: 1px #BBBBBB solid;
+}
+
+.key {
+ font-weight: bold;
+ font-style: italic;
+}
+
+.quotationDateInfo {
+ font-size: 9pt;
+ font-style: italic;
+ margin: 8px 0px 0px 0px;
+}
+
+.oedComment {
+ font-size: 9pt;
+ font-style: italic;
+ vertical-align: sub;
+ background: #EEEEEE;
+}

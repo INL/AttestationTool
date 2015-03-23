@@ -1,0 +1,127 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="../styles/attestationTool.css">
+  </link>
+</head>
+<body class=withBackground>
+
+<center><h1>IMPACT Attestation Tool</h1></center>
+
+<div class=instructions>
+Welcome to the IMPACT Attestation Tool.<br>
+This tool enables you to attest words by higlighting them in citations.
+<p>
+<a href="../attestationTool.php" target='_top'><u>Click here</u></a> to log in.
+<p>
+In the screenshot below you see an example page containing five quotations for
+the Dutch word 'ruiten'.
+
+<center>
+<img src="../images/screenshot.gif">
+</center>
+<ul>
+ <li>Quotations are displayed per lemma. They are ordered by degree of
+     uncertainty about their correctness.<br>
+     The most uncertain citation is displayed at the top and its color is the
+     most red. Literal citatations are green.</li>
+ <li>If there is something wrong with the citation that you can not fix with
+     this tool, mark it as a 'bad' citation by clicking the
+     <img src="../images/goodCitation.gif"> so it becomes
+     <img src="../images/badCitation.gif">.</li>
+ <li>If the current headword doesn't really occur in de citation, mark this by
+     changing the <img src="../images/fortunate.gif"> into a
+     <img src="../images/unfortunate.gif">.
+ <li>By hitting the <img src="../images/auto.gif"> button, the word that was
+     attested last will be automatically attested in the rest of
+     the page.
+ <li>You can delete the selected attestation by clicking on it or by hitting
+     the DELETE button on your keyboard.</li>
+ <li>You can add an attestation by clicking on a word, or by hitting the
+     INSERT button on your keyboard (which will mark the first non-attested
+     word as a new attestation).</li>
+ <li>You can move the selected attestation around by using the arrow keys 
+     (&larr;, &uarr;,  &rarr;, &darr;) on your keyboard.</li>
+ <li> You can make a group of attestations just by holding the mouse down while
+      selecting the words in the group. By holding down the appropriate key
+      for LOCATION/ORGANISATION/PERSON>NOT KNOWN the group will be attested as
+      such. If you don't hold down a key while selecting the group it will be a
+      PERSON by default.</li>
+</ul>
+
+Keys:
+<table border=0>
+ <tr><td class=keyCell valign=bottom><span class=key>F2</span> or <span class=key>d</span></td><td>&nbsp;</td><td class=keyCell valign=bottom>Previous revised lemma.</td></tr>
+ <tr><td class=keyCell valign=bottom><span class=key>F4</span> or <span class=key>f</span></td><td>&nbsp;</td><td class=keyCell valign=bottom>Next revised lemma.</td></tr>
+ <tr><td class=keyCell valign=bottom><span class=key>Spacebar</span></td><td>&nbsp;</td><td class=keyCell valign=bottom>Save current lemma, and display a new unrevised one.</td></tr>
+ <tr><td class=keyCell valign=bottom><span class=key>F8</span></td><td>&nbsp;</td><td class=keyCell valign=bottom>Type in some comment.</td></tr>
+ <tr><td class=keyCell valign=bottom><span class=key>F9</span> or <span class=key>x</span></td><td>&nbsp;</td><td class=keyCell valign=bottom>Toggle quote as good/bad
+                           <img src="../images/goodCitation.gif">
+			   <img src="../images/badCitation.gif">.
+		       </td></tr>
+ <tr><td class=keyCell valign=bottom><span class=key>u</span></td><td>&nbsp;</td><td class=keyCell valign=bottom>Toggle as fortunate/unfortunate citation
+                     <img src="../images/fortunate.gif">
+                     <img src="../images/unfortunate.gif">.
+                  </td></tr>
+ <tr><td class=keyCell valign=bottom><span class=key>a</span></td><td>&nbsp;</td><td class=keyCell valign=bottom>Auto attest
+                     <img src="../images/auto.gif">.
+                  </td></tr>
+ <tr><td class=keyCell><span class=key>e</span></td><td>&nbsp;</td><td class=keyCell valign=bottom>(Un)mark attestation as <img src="../images/elliptical.gif">elliptical (e.g. <i>North and South America</i>).</td></tr>
+ <tr><td class=keyCell><span class=key>s</span></td><td>&nbsp;</td><td class=keyCell valign=bottom>(Un)mark attestation as <img src="../images/erroneous.gif">erroneous.</td></tr>
+ <tr><td class=keyCell><span class=key>w</span></td><td>&nbsp;</td><td class=keyCell valign=bottom>(Un)mark attestation as <img src="../images/dubious.gif">dubious.</td></tr>
+ <tr><td class=keyCell valign=bottom><span class=key>INSERT</span></td><td>&nbsp;</td><td class=keyCell valign=bottom>Insert a new attestation.</td></tr>
+ <tr><td class=keyCell valign=bottom><span class=key>DELETE</span></td><td>&nbsp;</td><td class=keyCell valign=bottom>Delete currently selected attestation.</td></tr>
+ <tr><td class=keyCell valign=bottom><span class=key>&lt; &gt;</span></td><td>&nbsp;</td><td class=keyCell valign=bottom>Walk through attestations of the selected quote.</td></tr>
+ <tr><td class=keyCell valign=bottom><span class=key>\</span></td><td>&nbsp;</td><td class=keyCell valign=bottom>Split the token.</td></tr>
+ <tr><td class=keyCell valign=bottom><span class=key>` (backquote)</span></td><td>&nbsp;</td><td class=keyCell valign=bottom>Hold this key down while clicking on an attestation to start a group attestation. `-clicking on other tokens will
+add them to the group.</td></tr>
+ <tr><td class=keyCell valign=bottom><span class=key>1</span></td><td>&nbsp;</td><td class=keyCell valign=bottom>Normally if an attested token is clicked on it
+will become unattested. If you hold the '1' key while clicking it will just be selected.</td></tr>
+</table>
+<p>
+In the case of multiple typed attestations for named entities there are
+several more keys:
+<table border=0>
+ <tr>
+  <td class=keyCell width=80px><span class=key>m</span></td>
+  <td>&nbsp;</td>
+  <td class=keyCell valign=bottom>
+  Pull down the type menu for the currently selected attestation.
+ </tr>
+ <tr>
+  <td class=keyCell width=80px><span class=key>l</span></td>
+  <td>&nbsp;</td>
+  <td class=keyCell valign=bottom>
+    If this key is held down while clicking on an attestation, it will be
+    attestated as a LOCATION. Also if you press it when the type menu is open,
+    the currently selected attestation will become a LOCATION.</td>
+ </tr>
+ <tr>
+  <td class=keyCell><span class=key>n</span></td>
+  <td>&nbsp;</td>
+  <td class=keyCell valign=bottom>
+   If this key is held down while clicking on an attestation, it will be
+   attestated as NOT KNOWN. Also if you press it when the type menu is open,
+   the currently selected attestation will become NOT KNOWN.</td>
+ </tr>
+ <tr>
+  <td class=keyCell><span class=key>o</span></td>
+  <td>&nbsp;</td>
+  <td class=keyCell valign=bottom>If this key is held down while clicking on an
+   attestation, it will be attestated as an ORGANISATION. Also if you press it
+   when the type menu is open, the currently selected attestation will become
+   an ORGANISATION.</td>
+ </tr>
+ <tr>
+  <td class=keyCell><span class=key>p</span></td>
+  <td>&nbsp;</td>
+  <td class=keyCell valign=bottom>
+   If this key is held down while clicking on an attestation, it will be
+   attestated as a PERSON. Also if you press it when the type menu is open, the
+   currently selected attestation will become a PERSON.</td>
+ </tr>
+</table>
+
+
+</div>
+</body>
+</html>
