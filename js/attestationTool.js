@@ -90,7 +90,8 @@ function makeCommentBoxEditable() {
   }
 
   /// KAN dit niet gelijk commentKeydown
-  document.onkeydown = dummyKey; // Switch off the other key behaviour
+  document.onkeydown = null; // Switch off the other key behaviour 
+  
   oCommentBox.innerHTML = '<input id=commentInput type=text value="' +
     sValue + '" size=' + iSize + " maxlength=255>";
   // Make the row visible
@@ -99,6 +100,7 @@ function makeCommentBoxEditable() {
   oCommentInput = document.getElementById('commentInput');
   oCommentInput.focus();
   oCommentInput.onkeydown = commentKeydown;
+  
 }
 
 function saveComment(sComment) {
@@ -120,7 +122,8 @@ function saveComment(sComment) {
       oCommentBox.innerHTML = xmlHttp.responseText;
 
       if( ! xmlHttp.responseText.length ) // If there was nothing/it was deleted
-	oCommentBox.style.display = 'none'; // Hide it again
+		oCommentBox.style.display = 'none'; // Hide it again
+		
       document.onkeydown = keyDown;
     }
   }
@@ -458,9 +461,13 @@ function addClickEventListener(){
 		
 		// don't hide the type menu we the last element that was clicked upon is the comment field of that menu
 		if (target.id == 'usercomment')
+		{
 			return;
+		}
 		else
+		{
 			hideTypeMenu();
+		}
 	}, false); // false means the event handler is executed in the bubbling ( =/= capturing ) phase
 };
 
@@ -474,7 +481,9 @@ function hideTypeMenu() {
     oTypeMenu.style.visibility = 'hidden';
     var oSplitTokenBox = document.getElementById('splitTokenBox');
     if( ! oSplitTokenBox )
-      document.onkeydown = keyDown;
+	{
+		document.onkeydown = keyDown;
+	}
   }
   bClickedInTypeMenu = 0; // = false
 }
@@ -816,7 +825,7 @@ function makeCurTokenEditable() {
   sWordform = sWordform.replace(/<sub>\d+<\/sub>/i, '');
   oCurSelAtt.onclick = function() {}; // Switch off the onClick attribute
 
-  document.onkeydown = dummyKey;
+  document.onkeydown = null;
   oCurSelAtt.innerHTML = '<input id=splitTokenBox type=text value="' +
     sWordform + '" ' +
     "onkeydown=\"javascript: " +
@@ -1462,6 +1471,9 @@ function findNewGroupIndex(iQuotationId) {
   return 1;
 }
 
+// sPrevNext = 'prev' or 'next' if the user clicked on one of those, otherwise false
+// sLastDate = date limit, if the user filled in a date 
+//             (it can both mean before or after this date, depending which button the user clicked upon)
 function fillAttestationsDiv(iLemmaId, sPrevNext, sLastDate,
 			     iSelectedQuotationId) {
   var iOldScrollTop = document.body.scrollTop;
@@ -1525,20 +1537,20 @@ function fillAttestationsDiv(iLemmaId, sPrevNext, sLastDate,
       init(iLemmaId);
       // Put the page back at the top
       if( iSelectedQuotationId === false )
-	window.scrollTo(0, 0);
+		window.scrollTo(0, 0);
       else {
-	unselectCurrentQuotation();
-	deselectAllAttestations(aQuotationIds[iCurSelQuote]);
-	// Select this quotation
-	document.getElementById('citaat_' +
-				iSelectedQuotationId).className =
-	  'citaat_selected';
-	iCurSelQuote = iPreviouslySelectedQuote;
-	selectAttestation(document.getElementById('att_' +
-						  iSelectedQuotationId + '_' +
-						  iPreviouslySelectedAtt),
-			  iPreviouslySelectedAtt,
-			  false);
+		unselectCurrentQuotation();
+		deselectAllAttestations(aQuotationIds[iCurSelQuote]);
+		// Select this quotation
+		document.getElementById('citaat_' +
+					iSelectedQuotationId).className =
+		  'citaat_selected';
+		iCurSelQuote = iPreviouslySelectedQuote;
+		selectAttestation(document.getElementById('att_' +
+							  iSelectedQuotationId + '_' +
+							  iPreviouslySelectedAtt),
+				  iPreviouslySelectedAtt,
+				  false);
       }
       
       // always show the attestedSoFar
@@ -2492,9 +2504,9 @@ function splitToken(sSplitToken, iQuotationId, iOnset, bDubiosity, bElliptical,
 	  sEncapsulatingDivClose;
       }
       else { // Reload
-	fillAttestationsDiv(iLemmaId, false, false, iQuotationId);
-	// Put the keys back
-	document.onkeydown = keyDown;
+		fillAttestationsDiv(iLemmaId, false, false, iQuotationId);
+		// Put the keys back
+		document.onkeydown = keyDown;
       }
     }
   }

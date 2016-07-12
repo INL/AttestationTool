@@ -73,38 +73,44 @@ function buildQuery($iUserId, $sPrevNext, $iUserLemmaId, $sLastDate, $bOed) {
     $sLemmaIdPart = "= (SELECT id FROM lemmata WHERE revisorId = $iUserId" .
       $sHideCondition;
     if( $sLastDate ) { // If the user filled in a date
+	
       if( $sPrevNext == 'next' )
-	$sLemmaIdPart .=
-	  " AND revisionDate > '$sLastDate' ORDER BY revisionDate LIMIT 1)";
+		$sLemmaIdPart .=
+		" AND revisionDate > '$sLastDate' ORDER BY revisionDate LIMIT 1)";
+		
       else { // sPrevNext = prev
-	if( $sLastDate != 'unknown')
-	  $sLemmaIdPart .= " AND revisionDate < '$sLastDate'";
-	if( $sLastDate == 'now') // Skip one
-	  $sLemmaIdPart .= " ORDER BY revisionDate DESC LIMIT 1,1)";
-	else
-	  $sLemmaIdPart .= " ORDER BY revisionDate DESC LIMIT 1)";
+		if( $sLastDate != 'unknown')
+		  $sLemmaIdPart .= " AND revisionDate < '$sLastDate'";
+		if( $sLastDate == 'now') // Skip one
+		  $sLemmaIdPart .= " ORDER BY revisionDate DESC LIMIT 1,1)";
+		else
+		  $sLemmaIdPart .= " ORDER BY revisionDate DESC LIMIT 1)";
       }
     }
+	
     else { // If it's just the previous/next one, sorted by Id
+	
       if( $sPrevNext == 'next' )
-	$sLemmaIdPart .=
-	  " AND lemmata.id > $iUserLemmaId ORDER BY id LIMIT 1)";
+		$sLemmaIdPart .=
+		" AND lemmata.id > $iUserLemmaId ORDER BY id LIMIT 1)"; // get first one following current id
       else // sPrevNext = prev
-	$sLemmaIdPart .=
-	  " AND lemmata.id < $iUserLemmaId ORDER BY id DESC LIMIT 1)";
+		$sLemmaIdPart .=
+		" AND lemmata.id < $iUserLemmaId ORDER BY id DESC LIMIT 1)"; // get first one directly preceeding current id
     }
-  } // No previous/next.
+  } 
+  
+  // No previous/next.
   else {
     if( $iUserLemmaId ) { // In case of e.g token splitting
-      $sLemmaIdPart = "= $iUserLemmaId"; // Geen hide condition
+      $sLemmaIdPart = "= $iUserLemmaId"; // No hide condition
       
     }
     else { // Otherwise get a brand new one
       // Subquery to find out the id of the first lemma that hasn't been
       // revised yet.
       $sLemmaIdPart =
-	"= (SELECT id FROM lemmata l3 WHERE revisorId IS NULL" .
-	$sHideCondition . " LIMIT 1)";
+		"= (SELECT id FROM lemmata l3 WHERE revisorId IS NULL" .
+		$sHideCondition . " ORDER BY id LIMIT 1)";
     }
   }
 
@@ -114,7 +120,7 @@ function buildQuery($iUserId, $sPrevNext, $iUserLemmaId, $sLastDate, $bOed) {
   $sQuery =
     // New for OED: 'marked' and 'comment'
     "SELECT lemmata.id, marked, quotations.id as quotationId, " .
-    " externalLemmaId, " . # <- for OED (link to article)
+    " externalLemmaId, " . # <- for link to eg. dictionary article (in other application to be called by url)
     " total.nrOfLemmata, lemma, comment, specialAttention, unfortunate, " .
     "revisionDate, tokenizedQuotation, ".
     // NEW for OED
@@ -143,6 +149,7 @@ function buildQuery($iUserId, $sPrevNext, $iUserLemmaId, $sLastDate, $bOed) {
     "                        groupAttestations.pos)) AS groupAtts";
   if( $GLOBALS['aBackgroundColors'] )
     $sFromPart .= ", GROUP_CONCAT(typeId) AS typeIds ";
+
   $sFromPart .=
     "   FROM quotations q" .
     "   LEFT JOIN attestations ON (attestations.quotationId = q.id) " .
@@ -159,8 +166,9 @@ function buildQuery($iUserId, $sPrevNext, $iUserLemmaId, $sLastDate, $bOed) {
     "WHERE ";
 
   // If we should get the next/previous one for this user
+  // (=user clicked on next or previous)
   if( $sPrevNext ) {
-    // Columns too see if there another lemma before/after this one
+    // Columns to see if there another lemma before/after this one
     $sQuery .=
       ", IF(lemmata.id >= (SELECT IF(MAX(id) IS NULL, -1, MAX(id))" .
       " FROM lemmata WHERE revisorId = $iUserId), 1, 0) AS isLastLemma ";
@@ -175,8 +183,9 @@ function buildQuery($iUserId, $sPrevNext, $iUserLemmaId, $sLastDate, $bOed) {
     $sQuery .= "lemmata.id = quotations.lemmaId " .
       "AND tmp.quoteId = quotations.id " .
       "AND lemmata.id $sLemmaIdPart ";
-  } // No previous/next.
-  else {
+  }
+  
+  else { // No previous/next (user hasn't clicked on those buttons, but on 'new' or such)
     
     $sQuery .=
       ", IF(lemmata.id >= (SELECT IF(MAX(id) IS NULL, -1, MAX(id))" .
@@ -202,10 +211,16 @@ function buildQuery($iUserId, $sPrevNext, $iUserLemmaId, $sLastDate, $bOed) {
   }
   
   $sQuery .="ORDER BY reliability DESC, (0-specialAttention), (0-unfortunate)";
+  
+  printLog($sQuery);
 
   return array($sQuery, $bLockTables);
 }
 
+
+// $sPrevNext = 'prev' or 'next' if the user clicked on one of those, otherwise false
+// $sLastDate = date limit, if the user filled in a date 
+//             (it can both mean before or after this date, depending which button the user clicked upon)
 function printResult($sDatabase, $sUser, $iUserId, $oResult, $sPrevNext,
 		     $sLastDate, $bLockTables) {
   $bPrevButton = 0;
@@ -223,20 +238,24 @@ function printResult($sDatabase, $sUser, $iUserId, $oResult, $sPrevNext,
 
   while( $oRow = mysql_fetch_assoc ($oResult) ) {
     if( $bFirst ) {
-      $sRevDate = ( $oRow['revisionDate'] ) ? $oRow['revisionDate']
-	: 'unknown';
+      $sRevDate = ( $oRow['revisionDate'] ) ? $oRow['revisionDate'] : 'unknown';
       $iLemmaId = $oRow['id'];
       print "<table width=100% border=0><tr>";
       print "<td align=left width=25%>\n";
 
       // Here comes a new table for all the buttons. Having them in a table
       // makes it easier to display them on the same spot always
-
+	  
+	  
+	  // ---------------
       // Previous button
+	  // ---------------
+	  // Show if LM'er already worked on more than one lemma and the current one is not the first one
       print "<table border=0><tr>\n";
       print "<td width=64px>";
-      if( $oRow['nrOfLemmata'] > 0 &&
-	  ((! isset($oRow['isFirstLemma'])) || $oRow['isFirstLemma'] == 0)) {
+      if( $oRow['nrOfLemmata'] > 0  // number of lemmata done by LM so far, according to database
+		&&
+	  ((! isset($oRow['isFirstLemma'])) || $oRow['isFirstLemma'] == 0)) { // current lemma isn't the first one
 	print "<span class=textButton " .
 	  // When nothing happened to this lemma, its revision date will not be
 	  // set so we should unlock it.
@@ -248,66 +267,128 @@ function printResult($sDatabase, $sUser, $iUserId, $oResult, $sPrevNext,
 	  "Previous</span>\n";
 	$bPrevButton = 1;
       }
+	  // If conditions hereabove are not met, show disabled 'Previous' button
       else
 	print "<span class=textButtonEmpty>Previous</span>";
       print "</td>";
+	  
+	  /*
+	  print " nrOfLemmata = ".$oRow['nrOfLemmata']."<br>";
+	  print " sRevDate = ".$sRevDate."<br>";
+	  print " sPrevNext = ".$sPrevNext."<br>";
+	  print " sLastDate = ".$sLastDate."<br>";
+	  print " sLastDate IS NULL = ".($sLastDate == NULL ? 'YES': 'NO')."<br>";
+	  print " isLastLemma = ".( isset($oRow['isLastLemma']) ? $oRow['isLastLemma'] : "" )."<br>";
+	  print " isLastLemma = ".( isset($oRow['isLastLemma']) ? ( $oRow['isLastLemma'] ? "true" : "false" ) : "nothing" )."<br>";
+	  print " isFirstLemma = ".( isset($oRow['isFirstLemma']) ? $oRow['isFirstLemma'] : "" )."<br>";
+	  print " isFirstLemma = ".( isset($oRow['isFirstLemma']) ? ( $oRow['isFirstLemma'] ? "true" : "false" ) : "nothing" )."<br>";
+	  print " revisionDate = ".( isset($oRow['revisionDate']) && $oRow['revisionDate'] == null ? "null" : "niet null" )."<br>";
+	  */
+	  
+	  // next to the 'Previous' button come other buttons: ...
+	  
+	  // --------------------
       // Next/Save/New button
+	  // --------------------
+	  // Show [Next] + [New], if we reached the current lemma because the LM'er just clicked on Previous/Next,
+	  //                      and the current lemma appears to not be the last one.
+	  
       print "<td width=36px>";
-      /// Hier
-      if( ($sPrevNext && $sLastDate != 'unknown' &&
-	   ! (isset($oRow['isLastLemma']) && $oRow['isLastLemma'])) ||
-	  (isset($oRow['isLastLemma']) && $oRow['isLastLemma'] == 0)
+      
+	  
+	  // (NOTE: the condition $sLastDate != 'unknown' seems to always be true,
+	  //         as 'unknown' is never assigned to $sLastDate as far as I can see)
+      if( ($sPrevNext // user clicked on previous/next
+		&& 
+		$sLastDate != 'unknown'   // date limit is NULL  (or user has set some date limit)
+		&&
+	   ! (isset($oRow['isLastLemma']) && $oRow['isLastLemma'] == 1))  // current lemma is not the last one
+//	   || 
+//	  (isset($oRow['isLastLemma']) && $oRow['isLastLemma'] == 0) // current lemma is not the last one
 	  ) {
-	print  // Next
-	  "<span class=textButton onClick=\"javascript:" .
-	  "fillAttestationsDiv($iLemmaId, 'next', false, false);\"  " .
-	  "onMouseOver=\"javascript: this.style.cursor='pointer';\" " .
-	  "title=\"Next [F4 or 'f']\">Next</span></td>" .
-	  // New
-	  "<td width=88px align=center>" .
-	  "<span class=textButton " .
-	  "onMouseOver=\"javascript: this.style.cursor='pointer';\" " .
-	  "onClick=\"javascript: " .
-	  "fillAttestationsDiv(false, false, false, false);\" " .
-	  // Quick & dirty spacing
-	  "title='New [Spacebar]'>" .
-	  "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" .
-	  "New&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a></td>\n";
-	$bNextButton = 1;
+		print  	// --------
+				//   Next
+				// --------
+		  "<span class=textButton onClick=\"javascript:" .
+		  "fillAttestationsDiv($iLemmaId, 'next', false, false);\"  " .
+		  "onMouseOver=\"javascript: this.style.cursor='pointer';\" " .
+		  "title=\"Next [F4 or 'f']\">Next</span></td>" .
+		  
+				// -------
+				//   New
+				// -------
+		  "<td width=88px align=center>" .
+		  "<span class=textButton " .
+		  "onMouseOver=\"javascript: this.style.cursor='pointer';\" " .
+		  "onClick=\"javascript: " .
+		  "if(sRevDate == 'unknown') reviseLemma($iLemmaId);" .
+		  "fillAttestationsDiv(false, false, false, false);\" " .
+		  // Quick & dirty spacing
+		  "title='New [Spacebar]'>" .
+		  "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" .
+		  "New&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a></td>\n";
+		$bNextButton = 1;
       }
-      else
-	if( $sRevDate == 'unknown') {
-	  // In this case you can only get a new one if you revise this one
-	  // Empty 'Next' column
+	  
+	  
+	  // Show ['disabled' Next] + [Save & new],
+	  //  if there is NO revision date, meaning the lemma wasn't processed yet.
+	  //  (This is also the start layout, just after one has logged in into the tool).
+	  
+      else if( $sRevDate == 'unknown') {
+		  // Not revised yet, so
+		  // in this case you can only get a new lemma if you revise this one.
+		  // Disabled 'Next' button
+		  
+		  print "<span class=textButtonEmpty>Next</span></td>" .
+		  
+			// --------------
+			//   Save & new
+			// --------------
+			"<td width=88px>" .
+			"<span class=textButton " .
+			"onMouseOver=\"javascript: this.style.cursor='pointer';\" " .
+			"onClick=\"javascript: if ( !warnForSaveAndNewButton() ) return;" .
+			"reviseLemma($iLemmaId); " .
+			// New citation
+			"fillAttestationsDiv(false, false, false, false);\" ".
+			"title='Save & New [Spacebar]'>Save&nbsp;&&nbsp;new</span>" .
+			"</td>\n";
+		  // Also, the lemma is locked so no one else can get it on their
+		  // screens simultaneously
+		  lockLemma($iLemmaId, $iUserId);
+	}	
+	
+	// If the lemma was already revised (previous if-condition wasn't met!)
+	// Show ['disabled' Next] + [New]
+	else 
+	  // Subtle difference, don't save (as it already was saved)
+	  // Disabled 'Next' button
+	  // ---------------------
+	  
 	  print "<span class=textButtonEmpty>Next</span></td>" .
-	    // Save & new
-	    "<td width=88px>" .
-	    "<span class=textButton " .
-	    "onMouseOver=\"javascript: this.style.cursor='pointer';\" " .
-	    "onClick=\"javascript: if ( !warnForSaveAndNewButton() ) return;" .
-	    "reviseLemma($iLemmaId); " .
-	    // New citation
-	    "fillAttestationsDiv(false, false, false, false);\" ".
-	    "title='Save & New [Spacebar]'>Save&nbsp;&&nbsp;new</span>" .
-	    "</td>\n";
-	  // Also, the lemma is locked so no one else can get it on their
-	  // screens simultaneously
-	  lockLemma($iLemmaId, $iUserId);
-	}
-	else // Subtle difference, don't save (as it already was saved)
-	  // Empty 'Next' button
-	  print "<span class=textButtonEmpty>Next</span></td>" .
-	    // New
+		// --------
+	    //   New
+		// --------
 	    "<td width=88px align=center>" .
 	    "<span class=textButton " .
 	    "onMouseOver=\"javascript: this.style.cursor='pointer';\" " .
 	    "onClick=\"javascript: " .
-	    "fillAttestationsDiv(false, false, false, false); \" " .
+	    "fillAttestationsDiv(false, false, false, false); \" " .  // reviseLemma not needed here, 
+		                                                          // as this lemma was already revised
 	    // Quick & dirty spacing
 	    "title='New [Spacebar]'>" .
 	    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" .
 	    "New&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a></td>\n";
-      // Close button.
+		
+		
+		
+		
+	// finally, the 'Close' button:
+		
+	  // ------------------
+      //    Close button
+	  // ------------------
       print "<td><span class=textButton " .
 	"onMouseOver=\"javascript: this.style.cursor='pointer';\" " .
 	// When nothing happened to this lemma, its revision date will not be
@@ -365,7 +446,7 @@ function printResult($sDatabase, $sUser, $iUserId, $oResult, $sPrevNext,
 	" alert(sUserDate + \" is not a valid date (YYYY-MM-DD hh:mm:ss)\");'\n" .
 	"onMouseOver='javascript: this.style.cursor=\"pointer\";'>After</span>\n" .
 	"<input id=userDate type=text size=21 maxlength=19 " .
-	"value=\"YYYY-MM-DD hh:mm:ss\" onFocus='javascript: document.onkeydown = dummyKey; if( this.value == \"YYYY-MM-DD hh:mm:ss\") this.value = \"\";' onBlur='javascript: document.onkeydown = keyDown;'></td>";
+	"value=\"YYYY-MM-DD hh:mm:ss\" onFocus='javascript: document.onkeydown = null; if( this.value == \"YYYY-MM-DD hh:mm:ss\") this.value = \"\";' onBlur='javascript: document.onkeydown = keyDown;'></td>";
       print "</tr></table>\n";
       
       print "<table width=100% border=0><tr>";

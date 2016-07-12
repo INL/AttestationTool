@@ -26,6 +26,7 @@ function warnForSaveAndNewButton() {
 };
 
 function commentKeydown(e) {
+	
   var keyCode;
 
   if( window.event ) // Explorer
@@ -36,6 +37,8 @@ function commentKeydown(e) {
   // Enter validates a comment about the lemma 
   if( keyCode == 13 )
     saveComment(document.getElementById('commentInput').value);
+
+	// the saveComment will restore the 'keyDown' function upon key down event.
 }
 
 function tokenSplitKeydown(e, iQuotationId, iOnset, bDubiosity, bElliptical,
@@ -156,6 +159,15 @@ function keyUp (e) {
 }
 
 function keyDown (e) {
+	
+	// extra safe: if this function is still active when it shouldn't, leave it!
+	var oCommentInput = document.getElementById('commentInput');
+	if( oCommentInput) {
+		document.onkeydown = null; // Switch off the other key behaviour
+		return;
+	};
+	
+	
   var keyCode;
 
   if( window.event ) // Explorer
@@ -233,6 +245,7 @@ function keyDown (e) {
     makeCommentBoxEditable();
     break;
   case 32:  // Spacebar
+	
     // warning first
     if ( !bSpacebarPopupAlreadyShown)
 	{
@@ -264,7 +277,7 @@ function keyDown (e) {
       // When nothing happened to this lemma, its revision date will not be set
       // yet so we should unlock it.
       if( sRevDate == 'unknown')
-	unlockLemma(iLemmaId);
+		unlockLemma(iLemmaId);
       fillAttestationsDiv(iLemmaId, 'prev', false, false);
     }
     break;
